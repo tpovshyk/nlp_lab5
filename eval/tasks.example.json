@@ -1,0 +1,19 @@
+[
+  {
+    "id": "example_most_cited_001",
+    "task_type": "most_cited",
+    "prompt": "Find the 3 most-cited papers on retrieval-augmented generation published after 2020. For each, give a one-sentence summary and DOI or arXiv id.",
+    "expected_tool_classes": ["arxiv_search", "citation_lookup"],
+    "forbidden_behaviors": [
+      "Citing papers not retrieved by tools",
+      "Reporting citation counts without a source",
+      "Ignoring the year constraint"
+    ],
+    "rubric": {
+      "1": "Mostly incorrect or ungrounded.",
+      "2": "Partially relevant papers but missing identifiers or weak grounding.",
+      "3": "Relevant grounded papers with identifiers and concise summaries."
+    }
+  }
+]
+
