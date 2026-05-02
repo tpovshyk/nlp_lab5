@@ -122,6 +122,54 @@ Structural metrics are computed deterministically from the trajectory:
 LLM-as-judge (`--judge`) adds `rubric_score` (1-3) and `rubric_reasoning` per
 task, plus `avg_rubric_score` aggregates.
 
+## Cost tracking and budget
+
+Only `classify_task` calls an LLM in the agent (`plan_search`,
+`validate_evidence`, `write_answer` are template-based). Each call is small:
+~200 input + ~50 output tokens. With Claude Haiku 4.5 ($1/$5 per million
+tokens) one classification costs roughly $0.00045.
+
+Realistic costs (Haiku, with `--judge` adding one more call per task):
+
+| Run | Calls | Approx. cost |
+| --- | --- | --- |
+| Smoke test (`--limit 3`) | 3 | < $0.01 |
+| Baseline 30 tasks, no judge | 30 | ~$0.014 |
+| Baseline 30 tasks, with judge | 60 | ~$0.07 |
+| All 6 ablations × 30 tasks × judge | ~360 | ~$0.40 |
+
+To keep cost predictable:
+
+1. Set `MODEL_NAME=claude-haiku-4-5-20251001` and `MODEL_PROVIDER=anthropic`
+   in `.env`.
+2. Avoid `model_gpt4o` / `model_gemini` ablations unless you really need
+   cross-provider numbers — they require additional paid keys.
+3. Keep `validate_evidence` non-LLM (the current implementation is a
+   structural check, not a model call); switching it to an LLM would multiply
+   per-task cost.
+
+Each trajectory now records the `model` that produced it, and `analysis.py`
+multiplies token usage by the table in `eval/pricing.py` to report
+`total_cost_usd` and per-task `cost_usd`. If you swap to a model not in the
+table, the summary lists it under `missing_pricing` and treats its cost as 0
+— add the price to `eval/pricing.py` to fix that.
+
+## Saving results
+
+Every step writes deterministic JSON, so committing those artifacts to git
+is enough to preserve a run:
+
+```bash
+git add eval/trajectories.json eval/metrics.json eval/ablations/
+git commit -m "Eval run YYYY-MM-DD: baseline + ablations"
+```
+
+For archival outside the repo, tar the eval dir:
+
+```bash
+tar -czf eval-results-$(date +%Y%m%d).tar.gz eval/trajectories.json eval/metrics.json eval/ablations/
+```
+
 ## Caching note
 
 `mcp_literature_server` keys its cache by request parameters, not by task ID

@@ -33,6 +33,8 @@ if str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 
 
+from eval.pricing import cost_usd, is_priced  # noqa: E402
+
 _ARXIV_RE = re.compile(r"\b(\d{4}\.\d{4,5})(?:v\d+)?\b")
 _DOI_RE = re.compile(r"10\.\d{4,9}/[^\s,;)\"]+", re.IGNORECASE)
 
@@ -130,12 +132,16 @@ def ungrounded_claim_count(traj: dict, task_def: dict) -> int:
 
 def per_task_row(traj: dict, task_def: dict) -> dict:
     halluc = hallucinated_citations(traj)
+    tokens = traj.get("tokens") or {}
+    model = traj.get("model")
     return {
         "task_id": traj["task_id"],
         "task_type": traj["task_type"],
         "category": traj.get("category") or task_def.get("category"),
+        "model": model,
         "latency_s": traj.get("latency_s"),
-        "tokens": traj.get("tokens"),
+        "tokens": tokens,
+        "cost_usd": cost_usd(model, tokens.get("input", 0), tokens.get("output", 0)),
         "n_tool_calls": len(_tool_calls(traj)),
         "n_papers": len(_papers(traj)),
         "expected_tool_match": expected_tool_match(traj, task_def),
@@ -158,6 +164,10 @@ def summarize(rows: list[dict]) -> dict:
     if not n:
         return {}
 
+    total_cost = round(sum(r.get("cost_usd", 0) or 0 for r in rows), 4)
+    models_seen = sorted({r.get("model") for r in rows if r.get("model")})
+    unpriced = sorted({m for m in models_seen if not is_priced(m)})
+
     summary: dict[str, Any] = {
         "n_tasks": n,
         "n_errors": sum(1 for r in rows if r["error"]),
@@ -167,6 +177,9 @@ def summarize(rows: list[dict]) -> dict:
         "avg_latency_s": _avg(r["latency_s"] or 0 for r in rows),
         "avg_tokens_in": _avg((r.get("tokens") or {}).get("input", 0) for r in rows),
         "avg_tokens_out": _avg((r.get("tokens") or {}).get("output", 0) for r in rows),
+        "total_cost_usd": total_cost,
+        "models": models_seen,
+        "missing_pricing": unpriced,
         "hallucination_rate": round(sum(1 for r in rows if r["n_hallucinated"]) / n, 3),
         "repeat_call_rate": round(sum(1 for r in rows if r["repeated_tool_calls"]) / n, 3),
         "ungrounded_rate": round(sum(1 for r in rows if r["ungrounded_signal"]) / n, 3),

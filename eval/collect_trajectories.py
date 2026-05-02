@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 import sys
 import time
 from dataclasses import asdict, is_dataclass
@@ -109,6 +110,8 @@ def run_task(agent: Any, task: dict, run_label: str) -> dict:
         "category": task.get("category"),
         "prompt": prompt,
         "run_label": run_label,
+        "model": os.getenv("MODEL_NAME", "claude-haiku-4-5-20251001"),
+        "model_provider": os.getenv("MODEL_PROVIDER", "anthropic"),
         "latency_s": round(latency, 3),
         "tokens": {
             "input": tracker.input_tokens,
