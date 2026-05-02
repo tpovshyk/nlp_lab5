@@ -1,0 +1,17 @@
+README.md
+pyproject.toml
+src/ai340_track_a_research_agent.egg-info/PKG-INFO
+src/ai340_track_a_research_agent.egg-info/SOURCES.txt
+src/ai340_track_a_research_agent.egg-info/dependency_links.txt
+src/ai340_track_a_research_agent.egg-info/requires.txt
+src/ai340_track_a_research_agent.egg-info/top_level.txt
+src/research_agent/__init__.py
+src/research_agent/bot.py
+src/research_agent/budgets.py
+src/research_agent/graph.py
+src/research_agent/nodes.py
+src/research_agent/routing.py
+src/research_agent/state.py
+src/research_agent/tool_contracts.py
+tests/test_literature_tools.py
+tests/test_routing.py
