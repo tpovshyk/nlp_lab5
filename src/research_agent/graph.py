@@ -7,6 +7,7 @@ can be changed easily.
 
 from __future__ import annotations
 
+import os
 from typing import Any
 
 from research_agent.nodes import (
@@ -22,17 +23,16 @@ from research_agent.routing import route_after_validation
 from research_agent.state import AgentState
 
 
-def build_graph(checkpointer: Any | None = None) -> Any:
+def build_graph(
+    checkpointer: Any | None = None,
+    variant: str | None = None,
+) -> Any:
     """Build and compile the LangGraph StateGraph.
 
-    This is a scaffold because the team still needs to select exact LangGraph and MCP
-    client versions. The intended graph is:
-
-    initialize_run -> classify_task -> plan_search -> search_papers -> validate_evidence
-    validate_evidence -> search_papers | human_review | write_answer | stop_with_budget
-
-    Human-in-the-loop interrupt should be configured before or at the human_review
-    step in the concrete implementation.
+    Variants (also picked up from the GRAPH_VARIANT env var):
+      - default / None: full graph with validator and conditional re-search.
+      - "no_validator": skip the validator node; search_papers feeds write_answer
+        directly. Used for graph ablation studies.
     """
 
     try:
@@ -42,12 +42,13 @@ def build_graph(checkpointer: Any | None = None) -> Any:
             "Install the agent dependencies first: pip install -e '.[agent]'"
         ) from exc
 
+    variant = variant or os.environ.get("GRAPH_VARIANT")
+
     graph = StateGraph(AgentState)
     graph.add_node("initialize_run", initialize_run)
     graph.add_node("classify_task", classify_task)
     graph.add_node("plan_search", plan_search)
     graph.add_node("search_papers", search_papers)
-    graph.add_node("validate_evidence", validate_evidence)
     graph.add_node("write_answer", write_answer)
     graph.add_node("stop_with_budget", stop_with_budget_message)
 
@@ -55,19 +56,24 @@ def build_graph(checkpointer: Any | None = None) -> Any:
     graph.add_edge("initialize_run", "classify_task")
     graph.add_edge("classify_task", "plan_search")
     graph.add_edge("plan_search", "search_papers")
-    graph.add_edge("search_papers", "validate_evidence")
-    graph.add_conditional_edges(
-        "validate_evidence",
-        route_after_validation,
-        {
-            "search_more": "search_papers",
-            "human_review": "write_answer",
-            "write_answer": "write_answer",
-            "stop_with_budget": "stop_with_budget",
-        },
-    )
+
+    if variant == "no_validator":
+        graph.add_edge("search_papers", "write_answer")
+    else:
+        graph.add_node("validate_evidence", validate_evidence)
+        graph.add_edge("search_papers", "validate_evidence")
+        graph.add_conditional_edges(
+            "validate_evidence",
+            route_after_validation,
+            {
+                "search_more": "search_papers",
+                "human_review": "write_answer",
+                "write_answer": "write_answer",
+                "stop_with_budget": "stop_with_budget",
+            },
+        )
+
     graph.add_edge("write_answer", END)
     graph.add_edge("stop_with_budget", END)
 
     return graph.compile(checkpointer=checkpointer)
-

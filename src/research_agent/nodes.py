@@ -24,6 +24,61 @@ def initialize_run(state: AgentState) -> AgentState:
     }
 
 
+_CLASSIFY_PROMPTS = {
+    "default": (
+        "Analyze this research question and classify it into one of these task types:\n\n"
+        "1. most_cited: \"Find the N most-cited papers on [topic]\"\n"
+        "2. claim_evidence: \"Find papers that support/contradict [claim]\"\n"
+        "3. paper_comparison: \"Compare papers X and Y\" or \"Papers that cite/are cited by X\"\n"
+        "4. literature_review: \"Give a literature review on [topic]\"\n"
+        "5. unknown: Doesn't fit the above categories\n\n"
+        "User's question: \"{question}\"\n\n"
+        "Respond with the task type and brief reasoning."
+    ),
+    "minimal": (
+        "Pick one label for this query: most_cited | claim_evidence | "
+        "paper_comparison | literature_review | unknown.\n"
+        "Query: {question}"
+    ),
+    "verbose": (
+        "You are a careful research-librarian classifier. The agent downstream will "
+        "use the label to pick tools, so a wrong label costs API calls and time.\n\n"
+        "Labels (and what they imply):\n"
+        "- most_cited: user wants ranked papers; cite counts matter; arXiv + Semantic Scholar.\n"
+        "- claim_evidence: user gave a claim; agent must find supporting OR contradicting papers.\n"
+        "- paper_comparison: user named >=2 specific papers; agent should fetch metadata for each.\n"
+        "- literature_review: user wants synthesis over a topic, multiple papers, possibly recent.\n"
+        "- unknown: ambiguous, underspecified, or out-of-scope; downstream may need clarification.\n\n"
+        "Be conservative: if specific papers are not named, do NOT pick paper_comparison; "
+        "if no claim is stated, do NOT pick claim_evidence.\n\n"
+        "Question: \"{question}\"\n"
+        "Return the label and a one-sentence reason."
+    ),
+}
+
+
+def _build_classifier_llm():
+    """Instantiate the classifier LLM, honoring MODEL_PROVIDER and MODEL_NAME envs."""
+
+    import os
+
+    provider = os.getenv("MODEL_PROVIDER", "anthropic").lower()
+
+    if provider == "anthropic":
+        from langchain_anthropic import ChatAnthropic
+        model_name = os.getenv("MODEL_NAME", "claude-haiku-4-5-20251001")
+        return ChatAnthropic(model=model_name)
+    if provider == "openai":
+        from langchain_openai import ChatOpenAI  # type: ignore[import-not-found]
+        model_name = os.getenv("MODEL_NAME", "gpt-4o-mini")
+        return ChatOpenAI(model=model_name)
+    if provider == "google":
+        from langchain_google_genai import ChatGoogleGenerativeAI  # type: ignore[import-not-found]
+        model_name = os.getenv("MODEL_NAME", "gemini-1.5-flash")
+        return ChatGoogleGenerativeAI(model=model_name)
+    raise ValueError(f"Unsupported MODEL_PROVIDER: {provider}")
+
+
 def classify_task(state: AgentState) -> AgentState:
     """Classify the research question into a Track A task family.
 
@@ -32,42 +87,31 @@ def classify_task(state: AgentState) -> AgentState:
 
     import os
     import logging
-    from langchain_anthropic import ChatAnthropic
     from pydantic import BaseModel, Field
     from dotenv import load_dotenv
-    
+
     # Load environment variables
     load_dotenv()
-    
+
     logger = logging.getLogger(__name__)
-    
+
     class TaskClassification(BaseModel):
         """Classification result from Claude."""
         task_type: str = Field(
             description="One of: most_cited, claim_evidence, paper_comparison, literature_review, unknown"
         )
         reasoning: str = Field(description="Brief reasoning for the classification")
-    
+
     try:
-        # Initialize Claude LLM
-        model_name = os.getenv("MODEL_NAME", "claude-haiku-4-5-20251001")
-        llm = ChatAnthropic(model=model_name)
-        
+        llm = _build_classifier_llm()
+
         # Create structured output LLM
         structured_llm = llm.with_structured_output(TaskClassification)
-        
-        # Create classification prompt
-        prompt = f"""Analyze this research question and classify it into one of these task types:
 
-1. most_cited: "Find the N most-cited papers on [topic]"
-2. claim_evidence: "Find papers that support/contradict [claim]"
-3. paper_comparison: "Compare papers X and Y" or "Papers that cite/are cited by X"
-4. literature_review: "Give a literature review on [topic]"
-5. unknown: Doesn't fit the above categories
-
-User's question: "{state['user_question']}"
-
-Respond with the task type and brief reasoning."""
+        # Create classification prompt (variant configurable for ablation)
+        variant = os.getenv("CLASSIFY_PROMPT_VARIANT", "default")
+        template = _CLASSIFY_PROMPTS.get(variant, _CLASSIFY_PROMPTS["default"])
+        prompt = template.format(question=state["user_question"])
         
         # Call Claude
         result = structured_llm.invoke(prompt)

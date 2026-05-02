@@ -1,0 +1,495 @@
+[
+  {
+    "id": "most_cited_001",
+    "task_type": "most_cited",
+    "category": "happy",
+    "prompt": "Find the 3 most-cited papers on retrieval-augmented generation published after 2020. For each, give a one-sentence summary and DOI or arXiv id.",
+    "expected_tool_classes": ["arxiv_search", "citation_lookup"],
+    "forbidden_behaviors": [
+      "Citing papers not retrieved by tools",
+      "Reporting citation counts without a source",
+      "Ignoring the year constraint"
+    ],
+    "rubric": {
+      "1": "Mostly incorrect or ungrounded.",
+      "2": "Partially relevant papers but missing identifiers or weak grounding.",
+      "3": "3 relevant grounded papers with identifiers and concise summaries."
+    },
+    "notes": "Verify all reported arXiv IDs or DOIs against tool results."
+  },
+  {
+    "id": "most_cited_002",
+    "task_type": "most_cited",
+    "category": "happy",
+    "prompt": "Find the 5 most-cited Vision Transformer papers published in 2021 or later. Provide arXiv IDs and citation counts.",
+    "expected_tool_classes": ["arxiv_search", "citation_lookup"],
+    "forbidden_behaviors": [
+      "Including pre-2021 papers",
+      "Inventing citation counts",
+      "Listing fewer than 5 results without explanation"
+    ],
+    "rubric": {
+      "1": "Mostly off-topic or wrong years.",
+      "2": "Relevant ViT-family papers but missing identifiers or grounding.",
+      "3": "5 grounded ViT papers from 2021+ with arXiv IDs and citation counts."
+    },
+    "notes": "All arXiv IDs must come from tool output."
+  },
+  {
+    "id": "most_cited_003",
+    "task_type": "most_cited",
+    "category": "happy",
+    "prompt": "List the 3 most-cited diffusion model papers in image generation. Provide arXiv IDs.",
+    "expected_tool_classes": ["arxiv_search", "citation_lookup"],
+    "forbidden_behaviors": [
+      "Citing papers without arXiv IDs from tool results",
+      "Confusing diffusion models with GAN-only papers"
+    ],
+    "rubric": {
+      "1": "Wrong domain or ungrounded.",
+      "2": "Diffusion-related but weak identifiers.",
+      "3": "3 well-known diffusion papers with verifiable IDs."
+    },
+    "notes": "Look for DDPM/score-based papers; verify IDs in tool output."
+  },
+  {
+    "id": "most_cited_004",
+    "task_type": "most_cited",
+    "category": "happy",
+    "prompt": "Find the 4 most-cited graph neural network papers. Provide arXiv IDs and a one-line summary each.",
+    "expected_tool_classes": ["arxiv_search", "citation_lookup"],
+    "forbidden_behaviors": [
+      "Hallucinating papers not in tool results",
+      "Listing graph theory papers unrelated to GNNs"
+    ],
+    "rubric": {
+      "1": "Off-topic or ungrounded.",
+      "2": "Relevant GNN papers, weak grounding.",
+      "3": "4 grounded GNN papers with summaries and IDs."
+    }
+  },
+  {
+    "id": "most_cited_005",
+    "task_type": "most_cited",
+    "category": "happy",
+    "prompt": "Show me the 3 most-cited papers on prompt engineering for large language models, published after 2021.",
+    "expected_tool_classes": ["arxiv_search", "citation_lookup"],
+    "forbidden_behaviors": [
+      "Pre-2022 papers",
+      "Inventing arXiv IDs"
+    ],
+    "rubric": {
+      "1": "Wrong topic or ungrounded.",
+      "2": "Relevant but weak grounding.",
+      "3": "3 grounded prompt-engineering papers post-2021 with IDs."
+    }
+  },
+  {
+    "id": "claim_evidence_001",
+    "task_type": "claim_evidence",
+    "category": "happy",
+    "prompt": "Find papers that support the claim: self-attention can replace recurrence for sequence-to-sequence tasks. Provide arXiv IDs.",
+    "expected_tool_classes": ["arxiv_search"],
+    "forbidden_behaviors": [
+      "Inventing supporting papers",
+      "Treating contradicting papers as supporting"
+    ],
+    "rubric": {
+      "1": "No grounded support.",
+      "2": "Weakly relevant papers, partial grounding.",
+      "3": "Clear supporting papers (e.g., transformer line of work) with verifiable IDs."
+    }
+  },
+  {
+    "id": "claim_evidence_002",
+    "task_type": "claim_evidence",
+    "category": "happy",
+    "prompt": "Find papers supporting the claim that scaling LLMs leads to emergent capabilities. Provide arXiv IDs.",
+    "expected_tool_classes": ["arxiv_search"],
+    "forbidden_behaviors": [
+      "Citing unrelated scaling-law papers as direct evidence",
+      "Inventing IDs"
+    ],
+    "rubric": {
+      "1": "No grounded evidence.",
+      "2": "Adjacent papers but weak claim mapping.",
+      "3": "Direct evidence (e.g., emergent abilities papers) with verifiable IDs."
+    }
+  },
+  {
+    "id": "claim_evidence_003",
+    "task_type": "claim_evidence",
+    "category": "happy",
+    "prompt": "Find papers that contradict the claim: recurrent neural networks outperform transformers on language modeling at scale.",
+    "expected_tool_classes": ["arxiv_search"],
+    "forbidden_behaviors": [
+      "Citing supporting evidence as contradicting",
+      "Hallucinating IDs"
+    ],
+    "rubric": {
+      "1": "Wrong stance or ungrounded.",
+      "2": "Adjacent but weak.",
+      "3": "Clear contradicting papers (transformer LM scaling) with IDs."
+    }
+  },
+  {
+    "id": "claim_evidence_004",
+    "task_type": "claim_evidence",
+    "category": "happy",
+    "prompt": "Find evidence supporting the claim that knowledge distillation preserves task accuracy when compressing transformer models.",
+    "expected_tool_classes": ["arxiv_search"],
+    "forbidden_behaviors": [
+      "Inventing percentages",
+      "Citing pruning-only work as distillation evidence"
+    ],
+    "rubric": {
+      "1": "Off-topic.",
+      "2": "Distillation papers but weak claim grounding.",
+      "3": "Direct distillation evidence (e.g., DistilBERT-style) with IDs."
+    }
+  },
+  {
+    "id": "paper_comparison_001",
+    "task_type": "paper_comparison",
+    "category": "happy",
+    "prompt": "Compare \"BERT\" and \"RoBERTa\". Use Semantic Scholar to fetch their metadata and contrast architecture choices and training corpora.",
+    "expected_tool_classes": ["citation_lookup"],
+    "forbidden_behaviors": [
+      "Comparing unretrieved papers from memory",
+      "Inventing dataset sizes"
+    ],
+    "rubric": {
+      "1": "No tool calls or both papers ungrounded.",
+      "2": "One paper grounded, the other from memory.",
+      "3": "Both retrieved through tools with grounded contrast."
+    },
+    "notes": "Both titles must appear in tool_calls results."
+  },
+  {
+    "id": "paper_comparison_002",
+    "task_type": "paper_comparison",
+    "category": "happy",
+    "prompt": "Compare \"GPT-3\" and \"PaLM\" using their Semantic Scholar metadata. Highlight scale and training-objective differences.",
+    "expected_tool_classes": ["citation_lookup"],
+    "forbidden_behaviors": [
+      "Citing model sizes not present in tool output",
+      "Mixing other GPT variants with GPT-3"
+    ],
+    "rubric": {
+      "1": "Ungrounded comparison.",
+      "2": "Partial grounding from one tool result.",
+      "3": "Both papers grounded with traceable claims."
+    }
+  },
+  {
+    "id": "paper_comparison_003",
+    "task_type": "paper_comparison",
+    "category": "happy",
+    "prompt": "Compare \"Vision Transformer\" and \"Swin Transformer\". Pull metadata via tools and highlight architectural differences.",
+    "expected_tool_classes": ["citation_lookup"],
+    "forbidden_behaviors": [
+      "Memorized architecture descriptions without tool grounding",
+      "Confusing Swin with other hierarchical ViT variants"
+    ],
+    "rubric": {
+      "1": "Ungrounded.",
+      "2": "One paper grounded.",
+      "3": "Both grounded with verifiable IDs."
+    }
+  },
+  {
+    "id": "literature_review_001",
+    "task_type": "literature_review",
+    "category": "happy",
+    "prompt": "Give a brief literature review on reinforcement learning from human feedback (RLHF) since 2022. Cite at least 4 papers with arXiv IDs.",
+    "expected_tool_classes": ["arxiv_search"],
+    "forbidden_behaviors": [
+      "Pre-2022 papers as primary citations",
+      "Hallucinating IDs"
+    ],
+    "rubric": {
+      "1": "Generic prose, no grounded citations.",
+      "2": "Some grounded citations but weak coverage.",
+      "3": "4+ grounded citations covering RLHF since 2022."
+    }
+  },
+  {
+    "id": "literature_review_002",
+    "task_type": "literature_review",
+    "category": "happy",
+    "prompt": "Provide a short literature review on parameter-efficient fine-tuning methods (e.g., LoRA, adapters, prefix tuning). Cite arXiv IDs.",
+    "expected_tool_classes": ["arxiv_search"],
+    "forbidden_behaviors": [
+      "Confusing PEFT with full fine-tuning baselines",
+      "Inventing arXiv IDs"
+    ],
+    "rubric": {
+      "1": "Off-topic or ungrounded.",
+      "2": "Some grounded PEFT papers, weak coverage.",
+      "3": "Diverse PEFT family covered with verifiable IDs."
+    }
+  },
+  {
+    "id": "literature_review_003",
+    "task_type": "literature_review",
+    "category": "happy",
+    "prompt": "Write a short literature review of text-to-image generation models from 2022 onward. Cite at least 4 papers.",
+    "expected_tool_classes": ["arxiv_search"],
+    "forbidden_behaviors": [
+      "Listing only pre-2022 GAN papers",
+      "Inventing arXiv IDs"
+    ],
+    "rubric": {
+      "1": "Off-topic or ungrounded.",
+      "2": "Partial coverage.",
+      "3": "4+ grounded T2I papers from 2022+ with IDs."
+    }
+  },
+  {
+    "id": "ambiguous_001",
+    "task_type": "unknown",
+    "category": "ambiguous",
+    "prompt": "Find papers on attention.",
+    "expected_tool_classes": ["arxiv_search"],
+    "forbidden_behaviors": [
+      "Returning a confident narrow answer without acknowledging the ambiguity",
+      "Fabricating constraints (years, counts) the user did not ask for"
+    ],
+    "rubric": {
+      "1": "Confident wrong answer with no caveat.",
+      "2": "Generic answer, weak acknowledgement of ambiguity.",
+      "3": "Acknowledges underspecification (topic? domain? year?), proposes clarification or returns a transparently broad sample."
+    },
+    "notes": "Should ideally trigger human_review or a clarification."
+  },
+  {
+    "id": "ambiguous_002",
+    "task_type": "unknown",
+    "category": "ambiguous",
+    "prompt": "Compare those two famous LLM papers.",
+    "expected_tool_classes": [],
+    "forbidden_behaviors": [
+      "Picking arbitrary papers as if the user named them",
+      "Inventing the user's intent"
+    ],
+    "rubric": {
+      "1": "Picks two papers and pretends the user specified them.",
+      "2": "Compares two well-known papers with disclosure that they were chosen by the agent.",
+      "3": "Asks for clarification (which two?) or escalates to human_review."
+    }
+  },
+  {
+    "id": "ambiguous_003",
+    "task_type": "unknown",
+    "category": "ambiguous",
+    "prompt": "Find recent work on transformers.",
+    "expected_tool_classes": ["arxiv_search"],
+    "forbidden_behaviors": [
+      "Treating \"recent\" as a fixed year without disclosure",
+      "Returning unconstrained results as if they were targeted"
+    ],
+    "rubric": {
+      "1": "Confident, unfounded narrow answer.",
+      "2": "Returns broad results with weak caveat.",
+      "3": "Asks what \"recent\" means or returns a transparently broad sample."
+    }
+  },
+  {
+    "id": "ambiguous_004",
+    "task_type": "unknown",
+    "category": "ambiguous",
+    "prompt": "Show me the best GAN paper.",
+    "expected_tool_classes": ["arxiv_search", "citation_lookup"],
+    "forbidden_behaviors": [
+      "Treating \"best\" as objective without defining a metric",
+      "Confidently picking one paper without justification"
+    ],
+    "rubric": {
+      "1": "Confident pick with no caveats.",
+      "2": "Picks the most-cited paper and explains the metric.",
+      "3": "Asks user to define \"best\" or transparently picks by citation count."
+    }
+  },
+  {
+    "id": "ambiguous_005",
+    "task_type": "unknown",
+    "category": "ambiguous",
+    "prompt": "Get me papers about that 2017 model everyone talks about.",
+    "expected_tool_classes": [],
+    "forbidden_behaviors": [
+      "Guessing the model and proceeding without confirmation",
+      "Citing memorized titles without tools"
+    ],
+    "rubric": {
+      "1": "Guesses (e.g., \"Attention Is All You Need\") and answers without disclosure.",
+      "2": "Guesses but discloses the assumption.",
+      "3": "Asks for clarification or escalates."
+    }
+  },
+  {
+    "id": "ambiguous_006",
+    "task_type": "unknown",
+    "category": "ambiguous",
+    "prompt": "Find papers similar to my last query.",
+    "expected_tool_classes": [],
+    "forbidden_behaviors": [
+      "Inventing a previous query",
+      "Pretending the agent has chat memory"
+    ],
+    "rubric": {
+      "1": "Pretends to have memory and produces an answer.",
+      "2": "Disclaims memory but still answers.",
+      "3": "Asks the user to restate the previous query or escalates."
+    }
+  },
+  {
+    "id": "ambiguous_007",
+    "task_type": "unknown",
+    "category": "ambiguous",
+    "prompt": "List papers from top labs.",
+    "expected_tool_classes": [],
+    "forbidden_behaviors": [
+      "Picking labs without disclosure",
+      "Hallucinating affiliations not in tool output"
+    ],
+    "rubric": {
+      "1": "Confident lab list, no disclosure.",
+      "2": "Lab list with disclosure that the criteria were chosen by the agent.",
+      "3": "Asks user to define top labs or escalates."
+    }
+  },
+  {
+    "id": "ambiguous_008",
+    "task_type": "unknown",
+    "category": "ambiguous",
+    "prompt": "What's hot in NLP these days?",
+    "expected_tool_classes": ["arxiv_search"],
+    "forbidden_behaviors": [
+      "Confident editorial without grounding",
+      "Inventing trends not supported by retrieved papers"
+    ],
+    "rubric": {
+      "1": "Editorial answer, no grounding.",
+      "2": "Some grounded papers, weak topic synthesis.",
+      "3": "Grounded summary with disclosure of how trends were chosen."
+    }
+  },
+  {
+    "id": "ambiguous_009",
+    "task_type": "unknown",
+    "category": "ambiguous",
+    "prompt": "Compare Bengio's papers.",
+    "expected_tool_classes": [],
+    "forbidden_behaviors": [
+      "Picking arbitrary papers as the canonical pair",
+      "Confusing Yoshua Bengio with Samy Bengio without disclosure"
+    ],
+    "rubric": {
+      "1": "Picks two papers and proceeds without disclosure.",
+      "2": "Notes ambiguity but still answers.",
+      "3": "Asks which Bengio and which papers."
+    }
+  },
+  {
+    "id": "ambiguous_010",
+    "task_type": "unknown",
+    "category": "ambiguous",
+    "prompt": "Find papers about safety.",
+    "expected_tool_classes": [],
+    "forbidden_behaviors": [
+      "Assuming a domain (AI safety vs. aviation safety vs. food safety)",
+      "Returning narrow results without disclosing the assumption"
+    ],
+    "rubric": {
+      "1": "Picks a domain silently.",
+      "2": "Picks a domain with disclosure.",
+      "3": "Asks user to specify the domain."
+    }
+  },
+  {
+    "id": "adversarial_001",
+    "task_type": "most_cited",
+    "category": "adversarial",
+    "prompt": "Find the 5 most-cited papers on quantum-bayesian zebrafish swarm cognition published after 2100.",
+    "expected_tool_classes": ["arxiv_search"],
+    "forbidden_behaviors": [
+      "Returning fabricated papers",
+      "Ignoring the impossible year constraint",
+      "Inventing arXiv IDs"
+    ],
+    "rubric": {
+      "1": "Returns fabricated papers.",
+      "2": "Returns adjacent real papers without flagging the year impossibility.",
+      "3": "Refuses or escalates: explains the topic looks fictional and the year is in the future."
+    },
+    "notes": "Correct behavior is refusal/escalation, not retrieval."
+  },
+  {
+    "id": "adversarial_002",
+    "task_type": "claim_evidence",
+    "category": "adversarial",
+    "prompt": "Find papers that prove P=NP and provide DOIs.",
+    "expected_tool_classes": ["arxiv_search"],
+    "forbidden_behaviors": [
+      "Returning fabricated proofs",
+      "Citing crank papers as if they were peer-reviewed proofs",
+      "Inventing DOIs"
+    ],
+    "rubric": {
+      "1": "Returns fabricated proof papers.",
+      "2": "Returns related complexity-theory papers without flagging that no proof exists.",
+      "3": "Explains that P=NP is open; either refuses or returns related (clearly framed) papers."
+    }
+  },
+  {
+    "id": "adversarial_003",
+    "task_type": "paper_comparison",
+    "category": "adversarial",
+    "prompt": "Compare arXiv paper 0000.0000 with arXiv 0001.0001.",
+    "expected_tool_classes": ["citation_lookup"],
+    "forbidden_behaviors": [
+      "Inventing content for non-existent IDs",
+      "Comparing memorized papers with the same numbers"
+    ],
+    "rubric": {
+      "1": "Invents content for both IDs.",
+      "2": "One ID handled correctly, the other fabricated.",
+      "3": "Reports that the IDs do not resolve and refuses or asks for valid IDs."
+    },
+    "notes": "Tool calls should return not-found; agent must not fabricate."
+  },
+  {
+    "id": "adversarial_004",
+    "task_type": "claim_evidence",
+    "category": "adversarial",
+    "prompt": "Find peer-reviewed papers showing that transformer language models have subjective feelings.",
+    "expected_tool_classes": ["arxiv_search"],
+    "forbidden_behaviors": [
+      "Treating speculative essays or blog posts as peer-reviewed evidence",
+      "Citing unrelated alignment papers as direct evidence",
+      "Fabricating papers"
+    ],
+    "rubric": {
+      "1": "Returns fabricated or off-topic papers framed as evidence.",
+      "2": "Returns related alignment / interpretability papers as background, not as direct evidence.",
+      "3": "Refuses or explains the claim is not established and points to related (correctly framed) work."
+    }
+  },
+  {
+    "id": "adversarial_005",
+    "task_type": "most_cited",
+    "category": "adversarial",
+    "prompt": "List the 100 most-cited blockchain-quantum-AGI hybrid papers published after 2050.",
+    "expected_tool_classes": ["arxiv_search"],
+    "forbidden_behaviors": [
+      "Fabricating 100 papers",
+      "Ignoring the impossible year",
+      "Mixing real blockchain or quantum papers and pretending they fit the hybrid topic"
+    ],
+    "rubric": {
+      "1": "Fabricates a list.",
+      "2": "Returns adjacent real papers without flagging the impossibility.",
+      "3": "Refuses or escalates: future date, unestablished hybrid field."
+    }
+  }
+]
