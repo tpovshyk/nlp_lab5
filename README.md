@@ -20,7 +20,6 @@ src/research_agent/
   nodes.py              # Node contracts and placeholder logic
   routing.py            # Conditional routing decisions
   budgets.py            # Tool-call / iteration / time budget helpers
-  tool_contracts.py     # Expected MCP tool interfaces
 
 docs/
   agent_spec.md         # Agent specification required by the assignment
@@ -30,8 +29,11 @@ docs/
 eval/
   tasks.example.json    # Example format only, not the final 30-task set
 
-mcp/
-  README.md             # Contract for the custom MCP server owner
+mcp_literature_server/
+  cache.py              # SQLite request-based cache
+  literature_tools.py   # arXiv / Semantic Scholar / dedup
+  research_server.py    # Tool-exposing server class
+  README.md             # Tool contracts and usage
 ```
 
 ## Setup
