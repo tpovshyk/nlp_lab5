@@ -242,7 +242,10 @@ def summarize(rows: list[dict]) -> dict:
 def llm_judge(rows: list[dict], trajectories: list[dict], tasks: dict) -> None:
     """Score each row with an LLM-as-judge against the task rubric (1-3)."""
     from pydantic import BaseModel, Field
+    from dotenv import load_dotenv
     from research_agent.nodes import _build_classifier_llm  # type: ignore
+
+    load_dotenv()
 
     class RubricScore(BaseModel):
         score: int = Field(description="Integer 1-3 per the rubric.")

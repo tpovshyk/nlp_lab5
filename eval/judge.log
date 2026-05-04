@@ -1,0 +1,87 @@
+{
+  "n_tasks": 30,
+  "n_errors": 0,
+  "tool_selection_accuracy": 0.833,
+  "avg_steps": 2.4,
+  "avg_papers": 8.8,
+  "avg_latency_s": 21.663,
+  "avg_tokens_in": 1875.8,
+  "avg_tokens_out": 334.633,
+  "total_cost_usd": 0.1065,
+  "models": [
+    "claude-haiku-4-5-20251001"
+  ],
+  "missing_pricing": [],
+  "hallucination_rate": 0.0,
+  "repeat_call_rate": 0.067,
+  "ungrounded_rate": 0.233,
+  "by_category": {
+    "happy": {
+      "n": 15,
+      "tool_selection_accuracy": 1.0,
+      "avg_steps": 2.533,
+      "hallucination_rate": 0.0,
+      "ungrounded_rate": 0.0,
+      "avg_rubric_score": 1.467
+    },
+    "ambiguous": {
+      "n": 10,
+      "tool_selection_accuracy": 0.6,
+      "avg_steps": 1.4,
+      "hallucination_rate": 0.0,
+      "ungrounded_rate": 0.5,
+      "avg_rubric_score": 1.7
+    },
+    "adversarial": {
+      "n": 5,
+      "tool_selection_accuracy": 0.8,
+      "avg_steps": 4.0,
+      "hallucination_rate": 0.0,
+      "ungrounded_rate": 0.4,
+      "avg_rubric_score": 2.6
+    }
+  },
+  "by_task_type": {
+    "most_cited": {
+      "n": 7,
+      "tool_selection_accuracy": 1.0,
+      "avg_steps": 4.429,
+      "hallucination_rate": 0.0,
+      "ungrounded_rate": 0.0,
+      "avg_rubric_score": 1.857
+    },
+    "claim_evidence": {
+      "n": 6,
+      "tool_selection_accuracy": 1.0,
+      "avg_steps": 2.0,
+      "hallucination_rate": 0.0,
+      "ungrounded_rate": 0.333,
+      "avg_rubric_score": 2.167
+    },
+    "paper_comparison": {
+      "n": 4,
+      "tool_selection_accuracy": 0.75,
+      "avg_steps": 1.5,
+      "hallucination_rate": 0.0,
+      "ungrounded_rate": 0.0,
+      "avg_rubric_score": 1.5
+    },
+    "literature_review": {
+      "n": 3,
+      "tool_selection_accuracy": 1.0,
+      "avg_steps": 3.0,
+      "hallucination_rate": 0.0,
+      "ungrounded_rate": 0.0,
+      "avg_rubric_score": 1.0
+    },
+    "unknown": {
+      "n": 10,
+      "tool_selection_accuracy": 0.6,
+      "avg_steps": 1.4,
+      "hallucination_rate": 0.0,
+      "ungrounded_rate": 0.5,
+      "avg_rubric_score": 1.7
+    }
+  },
+  "avg_rubric_score": 1.733
+}
