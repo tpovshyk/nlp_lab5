@@ -1,0 +1,84 @@
+{
+  "summary": {
+    "n_tasks": 2,
+    "n_errors": 0,
+    "tool_selection_accuracy": 1.0,
+    "avg_steps": 2.0,
+    "avg_papers": 18.5,
+    "avg_latency_s": 3.379,
+    "avg_tokens_in": 865.0,
+    "avg_tokens_out": 124.0,
+    "total_cost_usd": 0.003,
+    "models": [
+      "claude-haiku-4-5-20251001"
+    ],
+    "missing_pricing": [],
+    "hallucination_rate": 0.0,
+    "repeat_call_rate": 0.0,
+    "ungrounded_rate": 0.0,
+    "by_category": {
+      "happy": {
+        "n": 2,
+        "tool_selection_accuracy": 1.0,
+        "avg_steps": 2.0,
+        "hallucination_rate": 0.0,
+        "ungrounded_rate": 0.0
+      }
+    },
+    "by_task_type": {
+      "most_cited": {
+        "n": 2,
+        "tool_selection_accuracy": 1.0,
+        "avg_steps": 2.0,
+        "hallucination_rate": 0.0,
+        "ungrounded_rate": 0.0
+      }
+    }
+  },
+  "per_task": [
+    {
+      "task_id": "most_cited_001",
+      "task_type": "most_cited",
+      "category": "happy",
+      "model": "claude-haiku-4-5-20251001",
+      "latency_s": 4.361,
+      "tokens": {
+        "input": 869,
+        "output": 128,
+        "llm_calls": 1
+      },
+      "cost_usd": 0.001509,
+      "n_tool_calls": 2,
+      "n_papers": 17,
+      "expected_tool_match": true,
+      "hallucinated_citations": [],
+      "n_hallucinated": 0,
+      "repeated_tool_calls": 0,
+      "ungrounded_signal": 0,
+      "has_final_answer": true,
+      "error": null
+    },
+    {
+      "task_id": "most_cited_002",
+      "task_type": "most_cited",
+      "category": "happy",
+      "model": "claude-haiku-4-5-20251001",
+      "latency_s": 2.397,
+      "tokens": {
+        "input": 861,
+        "output": 120,
+        "llm_calls": 1
+      },
+      "cost_usd": 0.001461,
+      "n_tool_calls": 2,
+      "n_papers": 20,
+      "expected_tool_match": true,
+      "hallucinated_citations": [],
+      "n_hallucinated": 0,
+      "repeated_tool_calls": 0,
+      "ungrounded_signal": 0,
+      "has_final_answer": true,
+      "error": null
+    }
+  ]
+}

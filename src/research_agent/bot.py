@@ -17,6 +17,7 @@ from datetime import datetime
 
 from dotenv import load_dotenv
 from telegram import Update, Message
+from telegram.error import BadRequest, Forbidden
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -24,6 +25,47 @@ from telegram.ext import (
     ContextTypes,
     filters,
 )
+
+
+TELEGRAM_MAX_LEN = 4096
+
+
+def _split_for_telegram(text: str, limit: int = 4000) -> list[str]:
+    """Split a long message on line boundaries so Markdown pairs aren't cut.
+
+    Greedy: pack as many full lines as fit per chunk; emit partial only if a
+    single line is itself longer than the limit.
+    """
+    chunks: list[str] = []
+    buf: list[str] = []
+    buf_len = 0
+    for line in text.split("\n"):
+        added = len(line) + 1
+        if buf_len + added > limit and buf:
+            chunks.append("\n".join(buf))
+            buf, buf_len = [], 0
+        if added > limit:
+            # one absurdly long line - hard-split it
+            for i in range(0, len(line), limit):
+                chunks.append(line[i : i + limit])
+            continue
+        buf.append(line)
+        buf_len += added
+    if buf:
+        chunks.append("\n".join(buf))
+    return chunks
+
+
+async def _safe_reply(message: Message, text: str) -> None:
+    """Reply with Markdown; on parse failure retry without parse_mode."""
+    for chunk in _split_for_telegram(text):
+        try:
+            await message.reply_text(chunk, parse_mode="Markdown")
+        except BadRequest as exc:
+            if "parse" not in str(exc).lower():
+                raise
+            logger.warning("Markdown parse failed (%s); retrying as plain text", exc)
+            await message.reply_text(chunk)
 
 # Load environment variables
 load_dotenv()
@@ -54,6 +96,11 @@ class ResearchAgentBot:
             except ValueError:
                 logger.warning("Invalid TELEGRAM_USER_ID in .env")
 
+        # Build the LangGraph agent once at startup so each request reuses it.
+        from research_agent.graph import build_graph
+        self.agent = build_graph()
+        logger.info("Research agent graph compiled and ready")
+
         # Initialize the application
         self.app = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
 
@@ -64,6 +111,18 @@ class ResearchAgentBot:
         self.app.add_handler(
             MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_message)
         )
+        self.app.add_error_handler(self._on_error)
+
+    async def _on_error(self, update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
+        """Swallow benign Telegram errors so they don't dump full tracebacks."""
+        err = context.error
+        if isinstance(err, Forbidden):
+            logger.warning("Skipped a chat that blocked the bot: %s", err)
+            return
+        if isinstance(err, BadRequest):
+            logger.warning("Telegram BadRequest: %s", err)
+            return
+        logger.exception("Unhandled bot error", exc_info=err)
 
     def is_authorized(self, user_id: int) -> bool:
         """Check if user is authorized to use the bot."""
@@ -170,12 +229,6 @@ Ready to process queries!
         await update.message.chat.send_action("typing")
 
         try:
-            # Import here to avoid circular imports
-            from research_agent.graph import build_graph
-
-            # Build the agent graph
-            agent = build_graph()
-
             # Send processing message
             processing_msg = await update.message.reply_text(
                 "🔍 Шукаю статті...\n\n"
@@ -186,23 +239,15 @@ Ready to process queries!
                 "⏳ Це може зайняти 30-60 секунд..."
             )
 
-            # Invoke the agent
-            result = agent.invoke({"user_question": user_message})
+            # Invoke the pre-built agent graph
+            result = self.agent.invoke({"user_question": user_message})
 
             # Delete the "processing" message
             await processing_msg.delete()
 
             # Send the result
             response_text = result.get("final_answer", "❌ No response from agent")
-
-            # Split long messages (Telegram limit is 4096 chars)
-            if len(response_text) > 4000:
-                # Send in chunks
-                for i in range(0, len(response_text), 4000):
-                    chunk = response_text[i : i + 4000]
-                    await update.message.reply_text(chunk, parse_mode="Markdown")
-            else:
-                await update.message.reply_text(response_text, parse_mode="Markdown")
+            await _safe_reply(update.message, response_text)
 
             # Log successful query
             logger.info(f"✓ Query processed successfully for @{username}")

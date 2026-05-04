@@ -1,0 +1,295 @@
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO research_agent.nodes: Classified task as: most_cited (The user is explicitly asking to "find the N most-cited papers" (specifically 3) on a specific topic (retrieval-augmented generation) with a time constraint (published after 2020). This directly matches the most_cited task type definition. The additional requests for summaries and identifiers are supplementary information to the core task of identifying the top-cited papers.)
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: most_cited
+INFO research_agent.nodes: Searching arXiv for: the 3 most-cited papers on retrieval-augmented generation published after 2020. For each, give a one-sentence summary and DOI or arXiv id. (year_from=2020, requested_n=3, fetch_n=10)
+INFO mcp_literature_server.research_server: search_arxiv: query=the 3 most-cited papers on retrieval-augmented generation published after 2020. For each, give a one-sentence summary and DOI or arXiv id., year_from=2020
+INFO mcp_literature_server.literature_tools: Retrieved 7 papers from arXiv for query: the 3 most-cited papers on retrieval-augmented generation published after 2020. For each, give a one-sentence summary and DOI or arXiv id.
+INFO research_agent.nodes: Found 7 papers on arXiv
+INFO research_agent.nodes: Deduplicating 7 papers
+INFO mcp_literature_server.research_server: deduplicate_papers: 7 input papers
+INFO mcp_literature_server.literature_tools: Deduplicated 7 papers down to 7 (0 duplicate groups)
+INFO research_agent.nodes: After deduplication: 7 unique papers
+INFO research_agent.nodes: Enriching 6 papers via S2 batch endpoint
+INFO mcp_literature_server.research_server: get_semantic_scholar_papers_batch: 6 ids
+INFO mcp_literature_server.literature_tools: S2 batch returned 6 entries for 6 ids
+INFO research_agent.nodes: After citation enrichment, top citation_counts=[44, 27, 16, 12, 6]
+INFO research_agent.nodes: Search complete: 7 papers found, 3 tool calls made
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO research_agent.nodes: Classified task as: most_cited (The user is explicitly asking to find papers based on citation count (the 5 most-cited) within a specific domain (Vision Transformers) and time period (2021 or later). This directly matches the "most_cited" category which seeks to identify and rank papers by their citation metrics.)
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: most_cited
+INFO research_agent.nodes: Searching arXiv for: the 5 most-cited Vision Transformer papers published in 2021 or later. Provide arXiv IDs and citation counts. (year_from=None, requested_n=5, fetch_n=15)
+INFO mcp_literature_server.research_server: search_arxiv: query=the 5 most-cited Vision Transformer papers published in 2021 or later. Provide arXiv IDs and citation counts., year_from=None
+INFO mcp_literature_server.literature_tools: Retrieved 15 papers from arXiv for query: the 5 most-cited Vision Transformer papers published in 2021 or later. Provide arXiv IDs and citation counts.
+INFO research_agent.nodes: Found 15 papers on arXiv
+INFO research_agent.nodes: Deduplicating 15 papers
+INFO mcp_literature_server.research_server: deduplicate_papers: 15 input papers
+INFO mcp_literature_server.literature_tools: Deduplicated 15 papers down to 15 (0 duplicate groups)
+INFO research_agent.nodes: After deduplication: 15 unique papers
+INFO research_agent.nodes: Enriching 10 papers via S2 batch endpoint
+INFO mcp_literature_server.research_server: get_semantic_scholar_papers_batch: 10 ids
+INFO mcp_literature_server.literature_tools: S2 batch returned 10 entries for 10 ids
+INFO research_agent.nodes: After citation enrichment, top citation_counts=[49, 35, 14, 7, 6]
+INFO research_agent.nodes: Search complete: 15 papers found, 3 tool calls made
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO research_agent.nodes: Classified task as: most_cited (The user is explicitly asking for the "N most-cited papers" (specifically 3) on a specific topic (diffusion model papers in image generation). This directly matches the most_cited task type definition: "Find the N most-cited papers on [topic]".)
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: most_cited
+INFO research_agent.nodes: Searching arXiv for: the 3 most-cited diffusion model papers in image generation. Provide arXiv IDs. (year_from=None, requested_n=3, fetch_n=10)
+INFO mcp_literature_server.research_server: search_arxiv: query=the 3 most-cited diffusion model papers in image generation. Provide arXiv IDs., year_from=None
+INFO mcp_literature_server.literature_tools: Retrieved 10 papers from arXiv for query: the 3 most-cited diffusion model papers in image generation. Provide arXiv IDs.
+INFO research_agent.nodes: Found 10 papers on arXiv
+INFO research_agent.nodes: Deduplicating 10 papers
+INFO mcp_literature_server.research_server: deduplicate_papers: 10 input papers
+INFO mcp_literature_server.literature_tools: Deduplicated 10 papers down to 10 (0 duplicate groups)
+INFO research_agent.nodes: After deduplication: 10 unique papers
+INFO research_agent.nodes: Enriching 6 papers via S2 batch endpoint
+INFO mcp_literature_server.research_server: get_semantic_scholar_papers_batch: 6 ids
+INFO mcp_literature_server.literature_tools: S2 batch returned 6 entries for 6 ids
+INFO research_agent.nodes: After citation enrichment, top citation_counts=[472, 416, 89, 17, 5]
+INFO research_agent.nodes: Search complete: 10 papers found, 3 tool calls made
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO research_agent.nodes: Classified task as: most_cited (The user is explicitly asking to "Find the 4 most-cited" papers on a specific topic (graph neural networks). This directly matches the most_cited task type definition of finding N most-cited papers on a topic. The request for arXiv IDs and summaries are additional output specifications.)
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: most_cited
+INFO research_agent.nodes: Searching arXiv for: the 4 most-cited graph neural network papers. Provide arXiv IDs and a one-line summary each. (year_from=None, requested_n=4, fetch_n=12)
+INFO mcp_literature_server.research_server: search_arxiv: query=the 4 most-cited graph neural network papers. Provide arXiv IDs and a one-line summary each., year_from=None
+INFO mcp_literature_server.literature_tools: Retrieved 12 papers from arXiv for query: the 4 most-cited graph neural network papers. Provide arXiv IDs and a one-line summary each.
+INFO research_agent.nodes: Found 12 papers on arXiv
+INFO research_agent.nodes: Deduplicating 12 papers
+INFO mcp_literature_server.research_server: deduplicate_papers: 12 input papers
+INFO mcp_literature_server.literature_tools: Deduplicated 12 papers down to 12 (0 duplicate groups)
+INFO research_agent.nodes: After deduplication: 12 unique papers
+INFO research_agent.nodes: Enriching 8 papers via S2 batch endpoint
+INFO mcp_literature_server.research_server: get_semantic_scholar_papers_batch: 8 ids
+INFO mcp_literature_server.literature_tools: S2 batch returned 8 entries for 8 ids
+INFO research_agent.nodes: After citation enrichment, top citation_counts=[564, 500, 179, 44, 27]
+INFO research_agent.nodes: Search complete: 12 papers found, 3 tool calls made
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO research_agent.nodes: Classified task as: most_cited (The user is explicitly asking for the "N most-cited papers" (in this case, 3) on a specific topic (prompt engineering for large language models). This directly matches the definition of the most_cited task type, where the goal is to identify and rank papers by citation count on a given topic. The publication year filter (after 2021) is an additional constraint but doesn't change the fundamental nature of the task.)
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: most_cited
+INFO research_agent.nodes: Searching arXiv for: me the 3 most-cited papers on prompt engineering for large language models, published after 2021. (year_from=2021, requested_n=3, fetch_n=10)
+INFO mcp_literature_server.research_server: search_arxiv: query=me the 3 most-cited papers on prompt engineering for large language models, published after 2021., year_from=2021
+INFO mcp_literature_server.literature_tools: Retrieved 9 papers from arXiv for query: me the 3 most-cited papers on prompt engineering for large language models, published after 2021.
+INFO research_agent.nodes: Found 9 papers on arXiv
+INFO research_agent.nodes: Deduplicating 9 papers
+INFO mcp_literature_server.research_server: deduplicate_papers: 9 input papers
+INFO mcp_literature_server.literature_tools: Deduplicated 9 papers down to 9 (0 duplicate groups)
+INFO research_agent.nodes: After deduplication: 9 unique papers
+INFO research_agent.nodes: Enriching 6 papers via S2 batch endpoint
+INFO mcp_literature_server.research_server: get_semantic_scholar_papers_batch: 6 ids
+INFO mcp_literature_server.literature_tools: S2 batch returned 6 entries for 6 ids
+INFO research_agent.nodes: After citation enrichment, top citation_counts=[8, 8, 6, 4, 1]
+INFO research_agent.nodes: Search complete: 9 papers found, 3 tool calls made
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO research_agent.nodes: Classified task as: claim_evidence (The user is asking for papers that support a specific claim about self-attention replacing recurrence in sequence-to-sequence tasks. This directly matches the claim_evidence task type definition: "Find papers that support/contradict [claim]". The user wants evidence papers that validate the stated claim.)
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: claim_evidence
+INFO research_agent.nodes: Searching for evidence: support the claim: self-attention can replace recurrence for sequence-to-sequence tasks. Provide arXiv IDs.
+INFO mcp_literature_server.research_server: search_arxiv: query=support the claim: self-attention can replace recurrence for sequence-to-sequence tasks. Provide arXiv IDs., year_from=None
+INFO mcp_literature_server.literature_tools: Retrieved 15 papers from arXiv for query: support the claim: self-attention can replace recurrence for sequence-to-sequence tasks. Provide arXiv IDs.
+INFO research_agent.nodes: Found 15 papers for claim evidence
+INFO research_agent.nodes: Deduplicating 15 papers
+INFO mcp_literature_server.research_server: deduplicate_papers: 15 input papers
+INFO mcp_literature_server.literature_tools: Deduplicated 15 papers down to 15 (0 duplicate groups)
+INFO research_agent.nodes: After deduplication: 15 unique papers
+INFO research_agent.nodes: Search complete: 15 papers found, 2 tool calls made
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO research_agent.nodes: Classified task as: claim_evidence (The user is asking for papers that support a specific claim: "scaling LLMs leads to emergent capabilities." This is a classic claim_evidence task where they want to find evidence (papers) that support or validate a particular assertion. The request for arXiv IDs is just a formatting requirement for the results.)
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: claim_evidence
+INFO research_agent.nodes: Searching for evidence: the claim that scaling LLMs leads to emergent capabilities. Provide arXiv IDs.
+INFO mcp_literature_server.research_server: search_arxiv: query=the claim that scaling LLMs leads to emergent capabilities. Provide arXiv IDs., year_from=None
+INFO mcp_literature_server.literature_tools: Retrieved 15 papers from arXiv for query: the claim that scaling LLMs leads to emergent capabilities. Provide arXiv IDs.
+INFO research_agent.nodes: Found 15 papers for claim evidence
+INFO research_agent.nodes: Deduplicating 15 papers
+INFO mcp_literature_server.research_server: deduplicate_papers: 15 input papers
+INFO mcp_literature_server.literature_tools: Deduplicated 15 papers down to 15 (0 duplicate groups)
+INFO research_agent.nodes: After deduplication: 15 unique papers
+INFO research_agent.nodes: Search complete: 15 papers found, 2 tool calls made
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO research_agent.nodes: Classified task as: claim_evidence (The user is explicitly asking to find papers that contradict a specific claim about recurrent neural networks versus transformers in language modeling. This is a classic claim_evidence task where the user seeks papers that provide evidence against a particular assertion.)
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: claim_evidence
+INFO research_agent.nodes: Searching for evidence: contradict the claim: recurrent neural networks outperform transformers on language modeling at scale.
+INFO mcp_literature_server.research_server: search_arxiv: query=contradict the claim: recurrent neural networks outperform transformers on language modeling at scale., year_from=None
+INFO mcp_literature_server.literature_tools: Retrieved 15 papers from arXiv for query: contradict the claim: recurrent neural networks outperform transformers on language modeling at scale.
+INFO research_agent.nodes: Found 15 papers for claim evidence
+INFO research_agent.nodes: Deduplicating 15 papers
+INFO mcp_literature_server.research_server: deduplicate_papers: 15 input papers
+INFO mcp_literature_server.literature_tools: Deduplicated 15 papers down to 15 (0 duplicate groups)
+INFO research_agent.nodes: After deduplication: 15 unique papers
+INFO research_agent.nodes: Search complete: 15 papers found, 2 tool calls made
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO research_agent.nodes: Classified task as: claim_evidence (The user is asking for papers that support a specific claim about knowledge distillation and transformer model compression. This is a classic "find evidence for a claim" query, which falls under the claim_evidence category. The user wants to find papers that provide evidence supporting the assertion that knowledge distillation preserves task accuracy when compressing transformers.)
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: claim_evidence
+INFO research_agent.nodes: Searching for evidence: evidence supporting the claim that knowledge distillation preserves task accuracy when compressing transformer models.
+INFO mcp_literature_server.research_server: search_arxiv: query=evidence supporting the claim that knowledge distillation preserves task accuracy when compressing transformer models., year_from=None
+INFO mcp_literature_server.literature_tools: Retrieved 15 papers from arXiv for query: evidence supporting the claim that knowledge distillation preserves task accuracy when compressing transformer models.
+INFO research_agent.nodes: Found 15 papers for claim evidence
+INFO research_agent.nodes: Deduplicating 15 papers
+INFO mcp_literature_server.research_server: deduplicate_papers: 15 input papers
+INFO mcp_literature_server.literature_tools: Deduplicated 15 papers down to 15 (0 duplicate groups)
+INFO research_agent.nodes: After deduplication: 15 unique papers
+INFO research_agent.nodes: Search complete: 15 papers found, 2 tool calls made
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO research_agent.nodes: Classified task as: paper_comparison (The user is explicitly asking to compare two specific papers/models: "BERT" and "RoBERTa". This is a direct paper comparison task as indicated by the instruction "Compare papers X and Y". The request to fetch metadata and contrast their architectural choices and training corpora further confirms this is a comparative analysis between two distinct works.)
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: paper_comparison
+INFO research_agent.nodes: Fetching paper: BERT
+INFO mcp_literature_server.research_server: get_semantic_scholar_paper: BERT
+WARNING mcp_literature_server.literature_tools: Semantic Scholar attempt 1 failed (Semantic Scholar rate limit exceeded); retrying in 5.0s
+ERROR mcp_literature_server.research_server: Tool error: Paper not found: BERT (retriable=False)
+INFO research_agent.nodes: Fetching paper: RoBERTa
+INFO mcp_literature_server.research_server: get_semantic_scholar_paper: RoBERTa
+WARNING mcp_literature_server.literature_tools: Semantic Scholar attempt 1 failed (Semantic Scholar rate limit exceeded); retrying in 5.0s
+WARNING mcp_literature_server.literature_tools: Semantic Scholar attempt 2 failed (Semantic Scholar rate limit exceeded); retrying in 15.0s
+ERROR mcp_literature_server.research_server: Tool error: Paper not found: RoBERTa (retriable=False)
+INFO research_agent.nodes: Search complete: 0 papers found, 2 tool calls made
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO research_agent.nodes: Classified task as: paper_comparison (The user is explicitly asking to compare two specific papers/models: "GPT-3" and "PaLM". They want to analyze differences between these two works using their metadata, specifically focusing on scale and training objectives. This directly matches the "paper_comparison" category which covers requests to "Compare papers X and Y".)
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: paper_comparison
+INFO research_agent.nodes: Fetching paper: GPT-3
+INFO mcp_literature_server.research_server: get_semantic_scholar_paper: GPT-3
+WARNING mcp_literature_server.literature_tools: Semantic Scholar attempt 1 failed (Semantic Scholar rate limit exceeded); retrying in 5.0s
+WARNING mcp_literature_server.literature_tools: Semantic Scholar attempt 2 failed (Semantic Scholar rate limit exceeded); retrying in 15.0s
+WARNING mcp_literature_server.literature_tools: Semantic Scholar attempt 3 failed (Semantic Scholar rate limit exceeded); retrying in 30.0s
+ERROR mcp_literature_server.research_server: Tool error: Semantic Scholar rate limit exceeded (retriable=True)
+INFO research_agent.nodes: Fetching paper: PaLM
+INFO mcp_literature_server.research_server: get_semantic_scholar_paper: PaLM
+WARNING mcp_literature_server.literature_tools: Semantic Scholar attempt 1 failed (Semantic Scholar rate limit exceeded); retrying in 5.0s
+WARNING mcp_literature_server.literature_tools: Semantic Scholar attempt 2 failed (Semantic Scholar rate limit exceeded); retrying in 15.0s
+WARNING mcp_literature_server.literature_tools: Semantic Scholar attempt 3 failed (Semantic Scholar rate limit exceeded); retrying in 30.0s
+ERROR mcp_literature_server.research_server: Tool error: Semantic Scholar rate limit exceeded (retriable=True)
+INFO research_agent.nodes: Search complete: 0 papers found, 2 tool calls made
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO research_agent.nodes: Classified task as: paper_comparison (The user is explicitly asking to compare two specific papers/models: "Vision Transformer" and "Swin Transformer". This directly matches the paper_comparison task type, which includes comparing papers X and Y. The request to pull metadata and highlight architectural differences further confirms this is a comparative analysis task between two specific research works.)
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: paper_comparison
+INFO research_agent.nodes: Fetching paper: Vision Transformer
+INFO mcp_literature_server.research_server: get_semantic_scholar_paper: Vision Transformer
+ERROR mcp_literature_server.research_server: Tool error: Paper not found: Vision Transformer (retriable=False)
+INFO research_agent.nodes: Fetching paper: Swin Transformer
+INFO mcp_literature_server.research_server: get_semantic_scholar_paper: Swin Transformer
+WARNING mcp_literature_server.literature_tools: Semantic Scholar attempt 1 failed (Semantic Scholar rate limit exceeded); retrying in 5.0s
+WARNING mcp_literature_server.literature_tools: Semantic Scholar attempt 2 failed (Semantic Scholar rate limit exceeded); retrying in 15.0s
+WARNING mcp_literature_server.literature_tools: Semantic Scholar attempt 3 failed (Semantic Scholar rate limit exceeded); retrying in 30.0s
+ERROR mcp_literature_server.research_server: Tool error: Paper not found: Swin Transformer (retriable=False)
+INFO research_agent.nodes: Search complete: 0 papers found, 2 tool calls made
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO research_agent.nodes: Classified task as: literature_review (The user is explicitly requesting a "literature review" on a specific topic (reinforcement learning from human feedback since 2022) and asking for citations from academic papers. This matches the literature_review category definition: "Give a literature review on [topic]". The addition of the requirement for arXiv IDs and a minimum number of papers (4) are specifications on the format and scope of the review, but do not change the fundamental nature of the request.)
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: literature_review
+INFO research_agent.nodes: Searching literature review papers: a brief literature review on reinforcement learning from human feedback (RLHF) since 2022. Cite at least 4 papers with arXiv IDs. (after 2020)
+INFO mcp_literature_server.research_server: search_arxiv: query=a brief literature review on reinforcement learning from human feedback (RLHF) since 2022. Cite at least 4 papers with arXiv IDs., year_from=2020
+INFO mcp_literature_server.literature_tools: Retrieved 22 papers from arXiv for query: a brief literature review on reinforcement learning from human feedback (RLHF) since 2022. Cite at least 4 papers with arXiv IDs.
+INFO research_agent.nodes: Found 22 papers for literature review
+INFO research_agent.nodes: Deduplicating 22 papers
+INFO mcp_literature_server.research_server: deduplicate_papers: 22 input papers
+INFO mcp_literature_server.literature_tools: Deduplicated 22 papers down to 22 (0 duplicate groups)
+INFO research_agent.nodes: After deduplication: 22 unique papers
+INFO research_agent.nodes: Enriching 8 papers via S2 batch endpoint
+INFO mcp_literature_server.research_server: get_semantic_scholar_papers_batch: 8 ids
+WARNING mcp_literature_server.literature_tools: S2 batch rate-limited (attempt 1); retrying once
+INFO mcp_literature_server.literature_tools: S2 batch returned 8 entries for 8 ids
+INFO research_agent.nodes: After citation enrichment, top citation_counts=[165, 44, 27, 16, 12]
+INFO research_agent.nodes: Search complete: 22 papers found, 3 tool calls made
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO research_agent.nodes: Classified task as: literature_review (The user explicitly asks for a "literature review" on parameter-efficient fine-tuning methods, providing specific examples (LoRA, adapters, prefix tuning). This is a clear match for the literature_review category, which involves providing a comprehensive overview of research on a given topic. The request for arXiv IDs indicates they want citations to relevant papers in this area.)
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: literature_review
+INFO research_agent.nodes: Searching literature review papers: Provide a short literature review on parameter-efficient fine-tuning methods (e.g., LoRA, adapters, prefix tuning). Cite arXiv IDs. (after 2020)
+INFO mcp_literature_server.research_server: search_arxiv: query=Provide a short literature review on parameter-efficient fine-tuning methods (e.g., LoRA, adapters, prefix tuning). Cite arXiv IDs., year_from=2020
+INFO mcp_literature_server.literature_tools: Retrieved 22 papers from arXiv for query: Provide a short literature review on parameter-efficient fine-tuning methods (e.g., LoRA, adapters, prefix tuning). Cite arXiv IDs.
+INFO research_agent.nodes: Found 22 papers for literature review
+INFO research_agent.nodes: Deduplicating 22 papers
+INFO mcp_literature_server.research_server: deduplicate_papers: 22 input papers
+INFO mcp_literature_server.literature_tools: Deduplicated 22 papers down to 22 (0 duplicate groups)
+INFO research_agent.nodes: After deduplication: 22 unique papers
+INFO research_agent.nodes: Enriching 10 papers via S2 batch endpoint
+INFO mcp_literature_server.research_server: get_semantic_scholar_papers_batch: 10 ids
+WARNING mcp_literature_server.literature_tools: S2 batch rate-limited (attempt 1); retrying once
+INFO mcp_literature_server.literature_tools: S2 batch returned 10 entries for 10 ids
+INFO research_agent.nodes: After citation enrichment, top citation_counts=[90, 44, 27, 16, 12]
+INFO research_agent.nodes: Search complete: 22 papers found, 3 tool calls made
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO research_agent.nodes: Classified task as: literature_review (The user explicitly requests a "literature review" on text-to-image generation models with a specific timeframe (2022 onward) and minimum citation count. This directly matches the literature_review task type definition: "Give a literature review on [topic]".)
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: literature_review
+INFO research_agent.nodes: Searching literature review papers: Write a short literature review of text-to-image generation models from 2022 onward. Cite at least 4 papers. (after 2020)
+INFO mcp_literature_server.research_server: search_arxiv: query=Write a short literature review of text-to-image generation models from 2022 onward. Cite at least 4 papers., year_from=2020
+WARNING mcp_literature_server.literature_tools: arXiv attempt 1 failed (arXiv API request failed: HTTPSConnectionPool(host='export.arxiv.org', port=443): Read timed out. (read timeout=10)); retrying in 5.0s
+INFO mcp_literature_server.literature_tools: Retrieved 22 papers from arXiv for query: Write a short literature review of text-to-image generation models from 2022 onward. Cite at least 4 papers.
+INFO research_agent.nodes: Found 22 papers for literature review
+INFO research_agent.nodes: Deduplicating 22 papers
+INFO mcp_literature_server.research_server: deduplicate_papers: 22 input papers
+INFO mcp_literature_server.literature_tools: Deduplicated 22 papers down to 22 (0 duplicate groups)
+INFO research_agent.nodes: After deduplication: 22 unique papers
+INFO research_agent.nodes: Enriching 8 papers via S2 batch endpoint
+INFO mcp_literature_server.research_server: get_semantic_scholar_papers_batch: 8 ids
+INFO mcp_literature_server.literature_tools: S2 batch returned 8 entries for 8 ids
+INFO research_agent.nodes: After citation enrichment, top citation_counts=[44, 27, 16, 12, 11]
+INFO research_agent.nodes: Search complete: 22 papers found, 3 tool calls made
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO research_agent.nodes: Classified task as: unknown (The query "Find papers on attention" is a general topic search that doesn't match the specific task types provided. It's not asking for the most-cited papers (no "N most-cited" specified), not evaluating evidence for/against a claim, not comparing specific papers, and not explicitly requesting a literature review. It's simply a broad search request for papers related to the topic of attention.)
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: unknown
+INFO research_agent.nodes: Fallback search for unknown task type: attention.
+INFO mcp_literature_server.research_server: search_arxiv: query=attention., year_from=None
+INFO mcp_literature_server.literature_tools: Retrieved 10 papers from arXiv for query: attention.
+INFO research_agent.nodes: Found 10 papers via fallback search
+INFO research_agent.nodes: Deduplicating 10 papers
+INFO mcp_literature_server.research_server: deduplicate_papers: 10 input papers
+INFO mcp_literature_server.literature_tools: Deduplicated 10 papers down to 10 (0 duplicate groups)
+INFO research_agent.nodes: After deduplication: 10 unique papers
+INFO research_agent.nodes: Search complete: 10 papers found, 2 tool calls made
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO research_agent.nodes: Classified task as: paper_comparison (The user is explicitly asking to "compare" two papers, which directly matches the paper_comparison category. Although the user doesn't specify which two papers they're referring to (likely referring to papers mentioned in prior context), the request is clearly asking for a comparison between two specific papers on Large Language Models.)
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: paper_comparison
+INFO research_agent.nodes: Search complete: 0 papers found, 0 tool calls made
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: paper_comparison
+INFO research_agent.nodes: Search complete: 0 papers found, 0 tool calls made
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: paper_comparison
+INFO research_agent.nodes: Search complete: 0 papers found, 0 tool calls made
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: paper_comparison
+INFO research_agent.nodes: Search complete: 0 papers found, 0 tool calls made
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: paper_comparison
+INFO research_agent.nodes: Search complete: 0 papers found, 0 tool calls made
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: paper_comparison
+INFO research_agent.nodes: Search complete: 0 papers found, 0 tool calls made
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: paper_comparison
+INFO research_agent.nodes: Search complete: 0 papers found, 0 tool calls made
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: paper_comparison
+INFO research_agent.nodes: Search complete: 0 papers found, 0 tool calls made
+INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO research_agent.nodes: Classified task as: unknown (The query "Find recent work on transformers" is a broad literature discovery request that doesn't fit the defined task types. It's not asking for the most-cited papers specifically (most_cited), doesn't involve evaluating claims or evidence (claim_evidence), doesn't compare specific papers (paper_comparison), and isn't requesting a comprehensive literature review (literature_review). It's simply a general search for recent papers on a topic.)
+INFO mcp_literature_server.research_server: Initialized ResearchAgentServer with cache at .cache
+INFO research_agent.nodes: MCP server initialized for task type: unknown
+INFO research_agent.nodes: Fallback search for unknown task type: recent work on transformers.
+INFO mcp_literature_server.research_server: search_arxiv: query=recent work on transformers., year_from=None
+WARNING mcp_literature_server.literature_tools: arXiv attempt 1 failed (arXiv API request failed: HTTPSConnectionPool(host='export.arxiv.org', port=443): Read timed out. (read timeout=10)); retrying in 5.0s

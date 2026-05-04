@@ -36,7 +36,19 @@ if str(_SRC) not in sys.path:
 from eval.pricing import cost_usd, is_priced  # noqa: E402
 
 _ARXIV_RE = re.compile(r"\b(\d{4}\.\d{4,5})(?:v\d+)?\b")
+_ARXIV_VERSION_RE = re.compile(r"v\d+$", re.IGNORECASE)
 _DOI_RE = re.compile(r"10\.\d{4,9}/[^\s,;)\"]+", re.IGNORECASE)
+
+
+def _normalize_arxiv_id(value: str) -> str:
+    """Strip a trailing version suffix (e.g. 'v2') from a bare arXiv id."""
+    return _ARXIV_VERSION_RE.sub("", value)
+
+
+def _normalize_doi(value: str) -> str | None:
+    """Extract the bare DOI (10.<prefix>/<suffix>) from any URL/identifier form."""
+    m = _DOI_RE.search(value)
+    return m.group(0).rstrip(".,);").lower() if m else None
 
 
 def _final_state(traj: dict) -> dict:
@@ -88,8 +100,16 @@ def hallucinated_citations(traj: dict) -> list[str]:
     for p in _papers(traj):
         for k in ("arxiv_id", "doi", "paper_id", "semantic_scholar_id", "openalex_id"):
             v = p.get(k) if isinstance(p, dict) else None
-            if v:
-                retrieved.add(str(v).strip().lower())
+            if not v:
+                continue
+            normalized = str(v).strip().lower()
+            retrieved.add(normalized)
+            if k in ("arxiv_id", "paper_id"):
+                retrieved.add(_normalize_arxiv_id(normalized))
+            if k == "doi" or normalized.startswith(("http://", "https://")):
+                bare = _normalize_doi(normalized)
+                if bare:
+                    retrieved.add(bare)
 
     cited: set[str] = set()
     for m in _ARXIV_RE.findall(answer):

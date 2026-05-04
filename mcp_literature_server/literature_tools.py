@@ -23,12 +23,15 @@ class LiteratureToolsError(Exception):
         self.is_retriable = is_retriable
 
 
+_RETRY_BACKOFF_SECONDS = (5.0, 15.0, 30.0)
+
+
 class ArxivSearcher:
     """Fetch papers from arXiv API with caching and retry logic."""
-    
+
     BASE_URL = "http://export.arxiv.org/api/query"
-    
-    def __init__(self, cache: RequestCache, rate_limit_delay: float = 0.5):
+
+    def __init__(self, cache: RequestCache, rate_limit_delay: float = 3.0):
         self.cache = cache
         self.rate_limit_delay = rate_limit_delay
         self._last_request_time = 0.0
@@ -88,36 +91,52 @@ class ArxivSearcher:
             "sortOrder": "descending",
         }
         
-        try:
-            self._enforce_rate_limit()
-            response = requests.get(self.BASE_URL, params=params, timeout=10)
-            self._last_request_time = time.time()
-            
-            if response.status_code == 429:
-                raise LiteratureToolsError(
-                    "arXiv API rate limit exceeded",
+        last_error: Exception | None = None
+        for attempt in range(len(_RETRY_BACKOFF_SECONDS) + 1):
+            try:
+                self._enforce_rate_limit()
+                response = requests.get(self.BASE_URL, params=params, timeout=10)
+                self._last_request_time = time.time()
+
+                if response.status_code == 429:
+                    last_error = LiteratureToolsError(
+                        "arXiv API rate limit exceeded",
+                        is_retriable=True,
+                    )
+                else:
+                    response.raise_for_status()
+                    papers = self._parse_arxiv_response(response.text, year_from)
+                    result = {"papers": papers}
+                    self.cache.set("arxiv", request_params, result)
+                    logger.info(
+                        f"Retrieved {len(papers)} papers from arXiv for query: {query}"
+                    )
+                    return {**result, "cached": False}
+
+            except requests.RequestException as e:
+                last_error = LiteratureToolsError(
+                    f"arXiv API request failed: {e}",
                     is_retriable=True,
                 )
-            response.raise_for_status()
-            
-            papers = self._parse_arxiv_response(response.text, year_from)
-            result = {"papers": papers}
-            
-            # Cache the result
-            self.cache.set("arxiv", request_params, result)
-            logger.info(f"Retrieved {len(papers)} papers from arXiv for query: {query}")
-            return {**result, "cached": False}
-            
-        except requests.RequestException as e:
-            raise LiteratureToolsError(
-                f"arXiv API request failed: {e}",
-                is_retriable=True,
-            ) from e
-        except Exception as e:
-            raise LiteratureToolsError(
-                f"Failed to parse arXiv response: {e}",
-                is_retriable=False,
-            ) from e
+            except LiteratureToolsError as e:
+                if not e.is_retriable:
+                    raise
+                last_error = e
+            except Exception as e:
+                raise LiteratureToolsError(
+                    f"Failed to parse arXiv response: {e}",
+                    is_retriable=False,
+                ) from e
+
+            if attempt < len(_RETRY_BACKOFF_SECONDS):
+                delay = _RETRY_BACKOFF_SECONDS[attempt]
+                logger.warning(
+                    f"arXiv attempt {attempt + 1} failed ({last_error}); retrying in {delay}s"
+                )
+                time.sleep(delay)
+
+        assert last_error is not None
+        raise last_error
 
     def _parse_arxiv_response(self, xml_text: str, year_from: Optional[int]) -> list:
         """Parse arXiv Atom feed response."""
@@ -308,30 +327,104 @@ class SemanticScholarClient:
         return None
 
     def _fetch_paper(self, paper_id: str, fields: list) -> Optional[dict]:
-        """Fetch a paper by ID with specified fields."""
-        try:
-            self._enforce_rate_limit()
-            url = f"{self.BASE_URL}/paper/{paper_id}"
-            params = {"fields": ",".join(fields)}
-            response = requests.get(url, params=params, timeout=10)
-            self._last_request_time = time.time()
-            
-            if response.status_code == 200:
-                return response.json()
-            elif response.status_code == 404:
-                return None
-            elif response.status_code == 429:
-                raise LiteratureToolsError(
-                    "Semantic Scholar rate limit exceeded",
-                    is_retriable=True,
+        """Fetch a paper by ID with specified fields, with retry on transient errors."""
+        url = f"{self.BASE_URL}/paper/{paper_id}"
+        params = {"fields": ",".join(fields)}
+
+        last_error: Exception | None = None
+        for attempt in range(len(_RETRY_BACKOFF_SECONDS) + 1):
+            try:
+                self._enforce_rate_limit()
+                response = requests.get(url, params=params, timeout=10)
+                self._last_request_time = time.time()
+
+                if response.status_code == 200:
+                    return response.json()
+                if response.status_code == 404:
+                    return None
+                if response.status_code == 429:
+                    last_error = LiteratureToolsError(
+                        "Semantic Scholar rate limit exceeded",
+                        is_retriable=True,
+                    )
+                else:
+                    response.raise_for_status()
+            except requests.RequestException as e:
+                logger.warning(f"Failed to fetch paper {paper_id}: {e}")
+                last_error = LiteratureToolsError(str(e), is_retriable=True)
+            except LiteratureToolsError as e:
+                if not e.is_retriable:
+                    raise
+                last_error = e
+
+            if attempt < len(_RETRY_BACKOFF_SECONDS):
+                delay = _RETRY_BACKOFF_SECONDS[attempt]
+                logger.warning(
+                    f"Semantic Scholar attempt {attempt + 1} failed ({last_error}); "
+                    f"retrying in {delay}s"
                 )
-            else:
-                response.raise_for_status()
-        except requests.RequestException as e:
-            logger.warning(f"Failed to fetch paper {paper_id}: {e}")
-            raise LiteratureToolsError(str(e), is_retriable=True)
-        
+                time.sleep(delay)
+
+        if last_error is not None:
+            raise last_error
         return None
+
+    def get_papers_batch(self, ids: list[str], fields: list[str]) -> dict:
+        """Fetch many papers in a single POST /paper/batch call.
+
+        Best-effort: returns {"papers": [...]} where missing papers are None.
+        On 429 we wait once briefly and retry; otherwise we give up fast so the
+        caller can degrade gracefully without burning the wall-clock budget.
+        """
+        if not ids:
+            return {"papers": [], "cached": False}
+
+        request_params = {"ids": sorted(set(ids)), "fields": sorted(set(fields))}
+        cached = self.cache.get("semantic_scholar_batch", request_params)
+        if cached:
+            logger.info(f"Cache hit for S2 batch ({len(ids)} ids)")
+            return {**cached, "cached": True}
+
+        url = f"{self.BASE_URL}/paper/batch"
+        params = {"fields": ",".join(fields)}
+        body = {"ids": list(ids)}
+
+        for attempt in range(2):  # one retry on transient failure
+            try:
+                self._enforce_rate_limit()
+                response = requests.post(url, params=params, json=body, timeout=15)
+                self._last_request_time = time.time()
+
+                if response.status_code == 200:
+                    data = response.json() or []
+                    result = {"papers": data}
+                    self.cache.set("semantic_scholar_batch", request_params, result)
+                    logger.info(f"S2 batch returned {len(data)} entries for {len(ids)} ids")
+                    return {**result, "cached": False}
+                if response.status_code == 429:
+                    logger.warning(
+                        f"S2 batch rate-limited (attempt {attempt + 1}); "
+                        f"{'retrying once' if attempt == 0 else 'giving up'}"
+                    )
+                    if attempt == 0:
+                        time.sleep(3.0)
+                        continue
+                    raise LiteratureToolsError(
+                        "Semantic Scholar batch rate limit exceeded",
+                        is_retriable=True,
+                    )
+                response.raise_for_status()
+            except requests.RequestException as e:
+                if attempt == 0:
+                    logger.warning(f"S2 batch request error (attempt 1): {e}; retrying")
+                    time.sleep(3.0)
+                    continue
+                raise LiteratureToolsError(
+                    f"Semantic Scholar batch failed: {e}",
+                    is_retriable=True,
+                ) from e
+
+        return {"papers": [], "cached": False}
 
     def _extract_paper_list(self, paper_list: list) -> list:
         """Convert S2 paper list to our PaperRecord format."""

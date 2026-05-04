@@ -101,3 +101,4 @@ class AgentState(TypedDict, total=False):
     budgets: BudgetState
     validation: ValidationReport
     final_answer: str
+    requested_n: int | None

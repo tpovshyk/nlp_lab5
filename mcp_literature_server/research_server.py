@@ -120,6 +120,28 @@ class ResearchAgentServer:
                 "retriable": False,
             }
 
+    def get_semantic_scholar_papers_batch(
+        self,
+        ids: list,
+        fields: Optional[list] = None,
+    ) -> Dict[str, Any]:
+        """Fetch citation_count + minimal metadata for many papers in one S2 call."""
+        try:
+            fields = fields or ["paperId", "title", "citationCount", "externalIds"]
+            logger.info(f"get_semantic_scholar_papers_batch: {len(ids)} ids")
+            result = self.semantic_scholar.get_papers_batch(ids, fields)
+            return {**result, "error": None}
+        except LiteratureToolsError as e:
+            logger.error(f"S2 batch tool error: {e} (retriable={e.is_retriable})")
+            return {
+                "papers": [],
+                "error": str(e),
+                "retriable": e.is_retriable,
+            }
+        except Exception as e:
+            logger.error(f"Unexpected error: {e}")
+            return {"papers": [], "error": str(e), "retriable": False}
+
     def deduplicate_papers(self, papers: list) -> Dict[str, Any]:
         """
         Deduplicate and merge paper records.
